@@ -1,0 +1,41 @@
+#webgazerVideoFeed, #webgazerFaceOverlay, #webgazerFaceFeedbackBox{
+  display: none !important;
+}
+.dot{
+  width: 100px;
+  height: 100px;
+  border-radius: 100px;
+  position: fixed;
+  background-color: red;
+}
+.frame, .center{
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+.frame{
+  display: none;
+}
+.top{
+  background-image:url(https://www.adorama.com/alc/wp-content/uploads/2017/11/shutterstock_114802408.jpg)
+}
+
+.center{
+  background-image: url(https://images.e-flux-systems.com/255774_036c4891edf1b4223599dd7a1f672ac6.jpg,2000x2000)
+}
+
+.left{
+  background-image: url(https://images.pexels.com/photos/9198/nature-sky-twilight-grass-9198.jpg?auto=compress&cs=tinysrgb&dpr=1&w=500)
+}
+
+.right{
+  background-image: url(https://images.pexels.com/photos/457882/pexels-photo-457882.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500)
+}
+
+.bottom{
+  background-image: url(https://www.gardeningknowhow.com/wp-content/uploads/2019/04/lawn-pH.jpg)
+}
