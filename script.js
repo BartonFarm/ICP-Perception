@@ -18,67 +18,68 @@ function throttle(callback, wait, immediate = false) {
     }
 }
 
-let clicks = 0;
-document.querySelector(".screen").addEventListener("click", () => {
-  clicks++
-})
-window.webgazer.setRegression("ridge"); //set a regression module
-
-let averageWindow = []
-let last = null
-let current = null
-let lock = false
-
-window.webgazer.setGazeListener(throttle(function(data, elapsedTime) {
-    if (data == null) {
-        return;
-    }
-    if (clicks < 20) return
-
-    averageWindow.unshift({x: data.x, y: data.y})
-    averageWindow = averageWindow.slice(0,10)
-    const [xsum, ysum] = averageWindow.reduce(([xp,yp],{x, y}) => {
-      return [xp+x, yp+y]
-    }, [0,0])
-    var xprediction = xsum/averageWindow.length; //these x coordinates are relative to the viewport
-    var yprediction = ysum/averageWindow.length; //these y coordinates are relative to the viewport
-
-    const dot = document.querySelector(".dot")
-    dot.style.left = xprediction + "px"
-    dot.style.top = yprediction + "px"
-
-    const pctRight = xprediction / window.innerWidth
-    const pctBottom = yprediction / window.innerHeight
-
-    if (pctRight < 0.4 && pctBottom < 0.4){
-        current = "ul"
-    } else if (pctRight > 0.6 && pctBottom < 0.4){
-        current = "ur"
-    } else if (pctRight < 0.4 && pctBottom > 0.6) {
-        current = "ll"
-    } else if (pctRight > 0.6 && pctBottom > 0.6){
-        current = "lr"
-    } else {
-        current = "default"
-    }
-    
-    if(lock) return
-    if(current === last) {
-        last = current
-    } else {
-        lock = true
-        setTimeout(() => {
-            lock = false
-        }, 1000)
-        Array.from(document.querySelectorAll("iframe")).forEach(div => {
-            div.style.opacity = "0"
+const scaleVideos = () => {
+    const videoRatio = 218/387
+    document.querySelectorAll(".video-wrapper").forEach(container => {
+        container.querySelectorAll("iframe").forEach(iframe => {
+            container.style.transform = "scale(1,1)"
+            const containerRatio = container.offsetHeight / container.offsetWidth
+            if (containerRatio > videoRatio) {
+                const finalHeight = container.offsetHeight
+                const finalWidth = finalHeight / videoRatio
+                iframe.style["min-width"] = finalWidth + "px"
+                iframe.style["min-height"] = finalHeight + "px"
+            } else {
+                const finalWidth = container.offsetWidth
+                const finalHeight = finalWidth / videoRatio
+                iframe.style["min-width"] = finalWidth + "px"
+                iframe.style["min-height"] = finalHeight + "px"
+            }
         })
-        Array.from(document.querySelectorAll("." + current)).forEach(div => {
-            div.style.opacity = "1"
+    })
+}
+
+scaleVideos()
+
+const attachListener = () => {
+    document.querySelectorAll(".video-wrapper").forEach(wrapper => {
+        const quadrant = wrapper.dataset.quadrant
+        const type = wrapper.dataset.type
+        wrapper.addEventListener("mouseenter", () => {
+            wrapper.style["z-index"] = 10
+            document.querySelectorAll("iframe").forEach(iframe => {
+                const iframeType = iframe.dataset.type
+                console.log(iframeType, type)
+                if(iframeType === type) {
+                    iframe.style.display = "block"
+                } else {
+                    iframe.style.display = "none"
+                }
+            })
         })
-        last = current
-    }
+        wrapper.addEventListener("mouseleave", () => {
+            wrapper.style["z-index"] = 1
+        })
+        wrapper.addEventListener("mousemove", throttle((e) => {
+            const box = wrapper.getBoundingClientRect()
+            let pctX, pctY
+            if (quadrant === "ul") {
+                pctX = 1 - (e.clientX / box.width)
+                pctY = 1 - (e.clientY / box.height)
+            } else if (quadrant === "ur") {
+                pctX = (e.clientX - box.x) / box.width
+                pctY = 1 - (e.clientY / box.height)
+            } else if (quadrant === "ll") {
+                pctX = 1 - (e.clientX / box.width)
+                pctY = (e.clientY - box.y) / box.height
+            } else if (quadrant === "lr") {
+                pctX = (e.clientX - box.x) / box.width
+                pctY = (e.clientY - box.y) / box.height
+            }
+            wrapper.style.transform = `scale(${1+(pctX * 1)}, ${1 + (pctY * 1)})`
+            e.preventDefault()
+        }, 50))
+    })
+}
 
-    
-
-})).begin();
+setTimeout(attachListener, 15000)
