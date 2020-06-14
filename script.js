@@ -1,3 +1,12 @@
+const waterAudio = new Audio('./water.mp3');
+const walkAudio = new Audio('./walk.mp3');
+const flowersAudio = new Audio('./flower.mp3');
+const sounds = {
+    walk: walkAudio,
+    flowers: flowersAudio,
+    water: waterAudio,
+}
+
 function throttle(callback, wait, immediate = false) {
     let timeout = null
     let initialCall = true
@@ -47,6 +56,13 @@ const attachListener = () => {
         const type = wrapper.dataset.type
         wrapper.addEventListener("mouseenter", () => {
             wrapper.style["z-index"] = 10
+            Object.entries(sounds).forEach(([name, audio]) => {
+                if (name === type) {
+                    audio.play()
+                } else {
+                    audio.pause()
+                }
+            })
             document.querySelectorAll("iframe").forEach(iframe => {
                 const iframeType = iframe.dataset.type
                 console.log(iframeType, type)
