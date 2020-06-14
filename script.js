@@ -1,3 +1,12 @@
+const waterAudio = new Audio('./water.mp3');
+const walkAudio = new Audio('./walk.mp3');
+const flowersAudio = new Audio('./flower.mp3');
+const sounds = {
+    walk: walkAudio,
+    flowers: flowersAudio,
+    water: waterAudio,
+}
+
 function throttle(callback, wait, immediate = false) {
     let timeout = null
     let initialCall = true
@@ -16,6 +25,19 @@ function throttle(callback, wait, immediate = false) {
             timeout = setTimeout(next, wait)
         }
     }
+}
+
+const showDefault = () => {
+    Object.entries(sounds).forEach(([name, audio]) => {
+        audio.pause()
+    })
+    document.querySelectorAll("iframe").forEach(iframe => {
+        if (iframe.className === "default") {
+            iframe.style.display = "block"
+        } else {
+            iframe.style.display = "none"
+        }
+    })
 }
 
 const scaleVideos = () => {
@@ -39,14 +61,20 @@ const scaleVideos = () => {
     })
 }
 
-scaleVideos()
-
 const attachListener = () => {
+    document.querySelector(".scrim").style.display = "none"
     document.querySelectorAll(".video-wrapper").forEach(wrapper => {
         const quadrant = wrapper.dataset.quadrant
         const type = wrapper.dataset.type
         wrapper.addEventListener("mouseenter", () => {
             wrapper.style["z-index"] = 10
+            Object.entries(sounds).forEach(([name, audio]) => {
+                if (name === type) {
+                    audio.play()
+                } else {
+                    audio.pause()
+                }
+            })
             document.querySelectorAll("iframe").forEach(iframe => {
                 const iframeType = iframe.dataset.type
                 console.log(iframeType, type)
@@ -61,6 +89,10 @@ const attachListener = () => {
             wrapper.style["z-index"] = 1
         })
         wrapper.addEventListener("mousemove", throttle((e) => {
+            if (window.timer){
+                clearTimeout(window.timer)
+            }
+            window.timer = setTimeout(showDefault, 5000)
             const box = wrapper.getBoundingClientRect()
             let pctX, pctY
             if (quadrant === "ul") {
@@ -82,4 +114,14 @@ const attachListener = () => {
     })
 }
 
-setTimeout(attachListener, 15000)
+scaleVideos()
+let dismissed = false
+document.querySelector(".scrim").addEventListener("click", () => {
+    if(!dismissed){
+        document.querySelector(".scrim").style.opacity = 0;
+        setTimeout(() => {
+            attachListener();
+        },10000)
+        dismissed = true
+    }
+})

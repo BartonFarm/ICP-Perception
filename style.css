@@ -3,18 +3,11 @@ body{
   width: 100vw;
   margin: 0;
 }
-.dot{
-  width: 100px;
-  height: 100px;
-  border-radius: 100px;
-  position: fixed;
-  background-color: red;
- }
 .videos{
+  display: flex;
   height: 100vh;
   width: 100vw;
   margin: 0;
-  display: flex;
   flex-wrap: wrap;
   overflow: hidden;
 }
@@ -37,12 +30,25 @@ body{
 .alt{
     display: none;
 }
-.screen{
+.screen, .scrim{
     width: 100%;
     height: 100%;
     position: fixed;
     top: 0;
     left: 0;
+    background-color: white;
+    transition: opacity 10s;
+}
+.scrim p{
+    position: absolute;
+    top: 50%;
+    text-align: center;
+    width: 100%;
+    text-align: center;
+    font-family: monospace;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 14px;
 }
 #webgazerVideoFeed, #webgazerFaceOverlay, #webgazerFaceFeedbackBox{
   display: none !important;
