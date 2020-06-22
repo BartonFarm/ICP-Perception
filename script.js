@@ -1,4 +1,5 @@
 const waterAudio = new Audio('./water.mp3');
+waterAudio.volume = 0.2
 const walkAudio = new Audio('./walk.mp3');
 const flowersAudio = new Audio('./flower.mp3');
 const sounds = {
