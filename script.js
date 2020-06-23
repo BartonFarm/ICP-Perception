@@ -93,7 +93,7 @@ const attachListener = () => {
             if (window.timer){
                 clearTimeout(window.timer)
             }
-            window.timer = setTimeout(showDefault, 5000)
+            window.timer = setTimeout(showDefault, 10000)
             const box = wrapper.getBoundingClientRect()
             let pctX, pctY
             if (quadrant === "ul") {
