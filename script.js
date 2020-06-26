@@ -61,14 +61,15 @@ const scaleVideos = () => {
         })
     })
 }
-
+let videos = Array.from(document.querySelectorAll(".video-wrapper"))
 const attachListener = () => {
     document.querySelector(".scrim").style.display = "none"
     document.querySelectorAll(".video-wrapper").forEach(wrapper => {
         const quadrant = wrapper.dataset.quadrant
         const type = wrapper.dataset.type
         wrapper.addEventListener("mouseenter", () => {
-            wrapper.style["z-index"] = 10
+            videos = [wrapper].concat(videos.filter(v => v !== wrapper))
+            videos.forEach((v, i) => v.style["z-index"] = 3 - i)
             Object.entries(sounds).forEach(([name, audio]) => {
                 if (name === type) {
                     audio.play()
@@ -85,9 +86,6 @@ const attachListener = () => {
                     iframe.style.display = "none"
                 }
             })
-        })
-        wrapper.addEventListener("mouseleave", () => {
-            wrapper.style["z-index"] = 1
         })
         wrapper.addEventListener("mousemove", throttle((e) => {
             if (window.timer){
